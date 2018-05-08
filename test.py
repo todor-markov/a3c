@@ -1,7 +1,7 @@
 import gym
 import numpy as np
 import tensorflow as tf
-from env_utils import MultiprocessEnv
+from env_wrappers import MultiprocessEnv
 from policies import ActorCriticD
 from train import a2c_rollout
 # env = gym.make('Pendulum-v0')

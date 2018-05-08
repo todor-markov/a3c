@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import gym
 from multiprocessing import Process, Pipe
+from collections import deque
 from utils import stack_space
 
 
@@ -126,54 +127,30 @@ class WarpFrame(gym.ObservationWrapper):
         return frame[:, :, None]
 
 
-class StackedEnv(object):
+class StackedEnv(gym.Wrapper):
 
     def __init__(self,
                  env,
                  stack_size,
                  stack_axis):
 
-        self.env = env
+        gym.Wrapper.__init__(self, env)
         self.stack_size = stack_size
         self.stack_axis = stack_axis
-        self.curr_stack = None
-        self.action_space = env.action_space
+        self.curr_stack = deque([], maxlen=stack_size)
         self.observation_space = stack_space(
             env.observation_space, stack_size, stack_axis)
 
-    def seed(self, seed=None):
-        self.env.seed(seed)
-
     def step(self, action):
         obs, reward, done, info = self.env.step(action)
-        indices = range(
-            self.env.observation_space.shape[self.stack_axis], 
-            self.observation_space.shape[self.stack_axis])
-        self.curr_stack = np.concatenate(
-            [np.take(self.curr_stack, indices, axis=self.stack_axis), obs],
-            axis=self.stack_axis)
-
-        return (self.curr_stack, reward, done, info)
+        self.curr_stack.append(obs)
+        stacked_obs = np.concatenate(self.curr_stack, axis=self.stack_axis)
+        return (stacked_obs, reward, done, info)
 
     def reset(self):
-        observations = []
         obs = self.env.reset()
-        observations.append(obs)
+        for _ in range(self.stack_size):
+            self.curr_stack.append(obs)
 
-        for _ in range(self.stack_size - 1):
-            obs, _, done, _ = self.env.step(self.action_space.sample())
-            if done:
-                print('Warning: episode terminated during the reset')
-                self.curr_stack = None
-                return None
-
-            observations.append(obs)
-
-        self.curr_stack = np.concatenate(observations, axis=self.stack_axis)
-        return self.curr_stack
-
-    def render(self):
-        self.env.render()
-
-    def close(self):
-        self.env.close()
+        stacked_obs = np.concatenate(self.curr_stack, axis=self.stack_axis)
+        return stacked_obs
