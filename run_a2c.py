@@ -6,7 +6,7 @@ import gym_snake
 import numpy as np
 import tensorflow as tf
 from train import a2c_train
-from env_wrappers import StackedEnv, WarpFrame
+from env_wrappers import StackedEnv, WarpFrame, make_atari, wrap_deepmind
 from policies import ActorCriticD, MlpActorCriticD, CnnActorCriticD
 from utils import get_policy_rewards, render_policy
 
@@ -28,8 +28,8 @@ if __name__ == '__main__':
         policy = CnnActorCriticD(
             'policy', env.observation_space.shape, env.action_space.n)
     else:
-        env = StackedEnv(gym.make(env_name), stack_size=4, stack_axis=0)
-        policy = MlpActorCriticD(
+        env = wrap_deepmind(make_atari(env_id))
+        policy = CnnActorCriticD(
             'policy', env.observation_space.shape, env.action_space.n)
 
     if mode == 'train':
@@ -46,9 +46,9 @@ if __name__ == '__main__':
             optimizer=optimizer,
             max_grad_norm=None,
             time_horizon=5,
-            num_iter=1000000,
+            num_iter=500,
             log_interval=100,
-            save_interval=1000,
+            save_interval=500,
             save_path=path)
 
         if restore_path is not None:
