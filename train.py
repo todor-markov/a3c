@@ -1,7 +1,7 @@
 import os
 import numpy as np
 import tensorflow as tf
-from multiprocess_env import MultiprocessEnv
+from env_utils import MultiprocessEnv
 from utils import discount_rewards
 
 

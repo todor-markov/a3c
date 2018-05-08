@@ -6,8 +6,8 @@ import gym_snake
 import numpy as np
 import tensorflow as tf
 from train import a2c_train
-from multiprocess_env import StackedEnv, WarpFrame
-from comp_graph_policies import ActorCriticD, MlpActorCriticD, CnnActorCriticD
+from env_utils import StackedEnv, WarpFrame
+from policies import ActorCriticD, MlpActorCriticD, CnnActorCriticD
 from utils import get_policy_rewards, render_policy
 
 

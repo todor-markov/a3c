@@ -1,8 +1,8 @@
 import gym
 import numpy as np
 import tensorflow as tf
-from multiprocess_env import MultiprocessEnv
-from comp_graph_policies import ActorCriticD
+from env_utils import MultiprocessEnv
+from policies import ActorCriticD
 from train import a2c_rollout
 # env = gym.make('Pendulum-v0')
 # menv = MultiprocessEnv(env, num_envs=4)
