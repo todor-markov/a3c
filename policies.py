@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn.preprocessing import normalize
 
+
 class ActorCriticD(object):
     """A generic ActorCritic class for environments with discrete actions
     Actual ActorCritic policy classes inherit from this class
@@ -11,7 +12,6 @@ class ActorCriticD(object):
             self._init(obs_shape, action_dims)
             self.scope = tf.get_variable_scope().name
 
-        
         self.saver = tf.train.Saver(
             tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, self.scope))
 
@@ -60,7 +60,7 @@ class ActorCriticD(object):
             axis=1)
 
         return [np.argmax(np.random.multinomial(1, probabilities[i]))
-            for i in range(observations.shape[0])]
+                for i in range(observations.shape[0])]
 
     def get_variables(self):
         return tf.get_collection(tf.GraphKeys.GLOBAL_VARIABLES, self.scope)
@@ -83,14 +83,15 @@ class MlpActorCriticD(ActorCriticD):
     the actor and the critic.
 
     Note that this class currently assumes that the environment observations
-    are 1-dimensional arrays.  
+    are 1-dimensional arrays.
     """
     def __init__(self, name, obs_shape, action_dims):
         super().__init__(name, obs_shape, action_dims)
 
     def _setup_actor_critic(self, action_dims):
         with tf.variable_scope('actor'):
-            net = tf.layers.dense(inputs=self.X, units=32, activation=tf.nn.tanh)
+            net = tf.layers.dense(
+                inputs=self.X, units=32, activation=tf.nn.tanh)
             self.logits = tf.layers.dense(inputs=net, units=action_dims)
             self.actor_scope = tf.get_variable_scope().name
 
@@ -109,10 +110,12 @@ class MlpActorCriticD(ActorCriticD):
             self.critic_scope = tf.get_variable_scope().name
 
     def get_trainable_actor_variables(self):
-        return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, self.actor_scope)
+        return tf.get_collection(
+            tf.GraphKeys.TRAINABLE_VARIABLES, self.actor_scope)
 
     def get_trainable_critic_variables(self):
-        return tf.get_collection(tf.GraphKeys.TRAINABLE_VARIABLES, self.critic_scope)
+        return tf.get_collection(
+            tf.GraphKeys.TRAINABLE_VARIABLES, self.critic_scope)
 
 
 class CnnActorCriticD(ActorCriticD):
@@ -121,7 +124,7 @@ class CnnActorCriticD(ActorCriticD):
 
     https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf
 
-    The nets do not share parameters.
+    The nets share all parameters except the last layer.
     The observation batches are assumed to have shape N x 84 X 84 x C
     """
     def __init__(self, name, obs_shape, action_dims):
@@ -145,21 +148,4 @@ class CnnActorCriticD(ActorCriticD):
         net = tf.layers.flatten(net)
         net = tf.layers.dense(inputs=net, units=256, activation=tf.nn.relu)
         self.logits = tf.layers.dense(inputs=net, units=action_dims)
-
-        # values = tf.layers.conv2d(
-        #     inputs=self.X,
-        #     filters=16,
-        #     kernel_size=8,
-        #     strides=(4, 4),
-        #     activation=tf.nn.relu)
-
-        # values = tf.layers.conv2d(
-        #     inputs=values,
-        #     filters=32,
-        #     kernel_size=4,
-        #     strides=(2, 2),
-        #     activation=tf.nn.relu)
-
-        # values = tf.layers.flatten(values)
-        # values = tf.layers.dense(inputs=values, units=256, activation=tf.nn.relu)
         self.values = tf.layers.dense(inputs=net, units=1)
