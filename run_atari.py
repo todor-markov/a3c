@@ -63,7 +63,10 @@ if __name__ == '__main__':
     if args.mode == 'eval':
         sess = tf.Session()
         sess.__enter__()
-        policy.restore(args.restore_path)
+        if args.restore_path:
+            policy.restore(args.restore_path)
+        else:
+            tf.get_default_session().run(tf.global_variables_initializer())
         env = wrap_deepmind(
             make_atari(args.env), episode_life=False, clip_rewards=False)
         rewards = get_policy_rewards(policy, env, n_iter=20)

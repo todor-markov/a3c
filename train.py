@@ -100,6 +100,7 @@ def a2c_train(policy,
 
     R = tf.placeholder(dtype=tf.float32, shape=[None])
     A = tf.placeholder(dtype=tf.int32, shape=[None])
+    ADV = tf.placeholder(dtype=tf.float32, shape=[None])
     LR = tf.placeholder(dtype=tf.float32, shape=[])
     logits = policy.get_logits()
     values = policy.get_values()
@@ -108,17 +109,13 @@ def a2c_train(policy,
     negative_likelihoods = tf.nn.sparse_softmax_cross_entropy_with_logits(
         labels=A, logits=logits)
 
-    weighted_negative_likelihoods = tf.multiply(
-        negative_likelihoods,
-        tf.subtract(R, values))
-
     entropy = tf.reduce_sum(
         tf.multiply(probabilities, -tf.log(probabilities + 1e-9)),
         axis=1)
 
     entropy_coeff = tf.constant(0.01)
-    vf_coeff = tf.constant(0.5)
-    pg_loss = tf.reduce_mean(weighted_negative_likelihoods)
+    vf_coeff = tf.constant(0.25)
+    pg_loss = tf.reduce_mean(negative_likelihoods * ADV)
     entropy_loss = tf.reduce_mean(entropy)
     vf_loss = tf.losses.mean_squared_error(R, tf.squeeze(values))
 
@@ -157,11 +154,19 @@ def a2c_train(policy,
             curr_observations=curr_obs,
             time_horizon=time_horizon)
 
+        vals = policy.get_values(obs)[:, 0]
+
         learning_rate = get_learning_rate(
             init_learning_rate, learning_rate_schedule, i-1, num_iter)
 
         curr_sess = tf.get_default_session()
-        feed_dict = {policy.X: obs, A: actions, R: rewards, LR: learning_rate}
+        feed_dict = {
+            policy.X: obs,
+            A: actions,
+            R: rewards,
+            ADV: rewards - vals,
+            LR: learning_rate,
+        }
 
         (pg_loss_np, vf_loss_np, entropy_loss_np, loss_np, _) = curr_sess.run(
             [pg_loss, vf_loss, entropy_loss, loss, train],
