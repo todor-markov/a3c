@@ -1,5 +1,3 @@
 __pycache__*
-policies/*
-test*
+deep_rl_implementations/a2c/policies/*
 logging/*
-other/*
