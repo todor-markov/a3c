@@ -3,11 +3,11 @@ import gym
 import gym_snake
 import numpy as np
 import tensorflow as tf
-from train import a2c_train
-from env_wrappers import StackedEnv, WarpFrame, ScaledFloatFrame
-from policies import CnnActorCriticD
-from util import get_policy_rewards, render_policy, set_global_seeds
-from util import create_a2c_parser
+from deep_rl_implementations.a2c.train import a2c_train
+from deep_rl_implementations.common.env_wrappers import StackedEnv, WarpFrame, ScaledFloatFrame
+from deep_rl_implementations.common.policies import CnnActorCriticD
+from deep_rl_implementations.common.util import get_policy_rewards, render_policy, set_global_seeds
+from deep_rl_implementations.common.util import create_a2c_parser
 
 
 if __name__ == '__main__':

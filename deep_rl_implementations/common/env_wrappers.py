@@ -4,7 +4,7 @@ import cv2
 import gym
 from multiprocessing import Process, Pipe
 from collections import deque
-from util import stack_space
+from deep_rl_implementations.common.util import stack_space
 
 
 def env_worker(pipe, env):
