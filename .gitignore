@@ -1,0 +1,5 @@
+__pycache__*
+policies/*
+test*
+logging/*
+other/*
