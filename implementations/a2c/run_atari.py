@@ -1,11 +1,11 @@
 import time
 import numpy as np
 import tensorflow as tf
-from deep_rl_implementations.a2c.train import a2c_train
-from deep_rl_implementations.common.env_wrappers import make_atari, wrap_deepmind
-from deep_rl_implementations.common.policies import CnnActorCriticD
-from deep_rl_implementations.common.util import get_policy_rewards, render_policy, set_global_seeds
-from deep_rl_implementations.common.util import create_a2c_parser
+from implementations.a2c.train import a2c_train
+from implementations.common.env_wrappers import make_atari, wrap_deepmind
+from implementations.common.policies import CnnActorCriticD
+from implementations.common.util import get_policy_rewards, render_policy, set_global_seeds
+from implementations.common.util import create_a2c_parser
 
 
 def create_argument_parser():

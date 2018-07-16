@@ -1,6 +1,6 @@
 from setuptools import setup
 
-setup(name='deep_rl_implementations',
+setup(name='implementations',
       install_requires=[
           'gym',
           'scipy',

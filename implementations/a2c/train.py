@@ -1,9 +1,9 @@
 import os
 import numpy as np
 import tensorflow as tf
-from deep_rl_implementations.common.env_wrappers import MultiprocessEnv
-from deep_rl_implementations.common.util import discount_rewards, get_learning_rate, set_global_seeds
-from deep_rl_implementations.common.util import Logger
+from implementations.common.env_wrappers import MultiprocessEnv
+from implementations.common.util import discount_rewards, get_learning_rate, set_global_seeds
+from implementations.common.util import Logger
 
 
 def a2c_rollout(policy,
